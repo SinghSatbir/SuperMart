@@ -1,0 +1,397 @@
+create schema supermarket;
+
+set search_path to supermarket;
+
+
+
+create table storage_area
+(
+	sectionID varchar(3),
+	section_name varchar(50) not null,
+	primary key(sectionID)
+);
+
+create table items
+(
+	itemcode varchar(20),
+	MRP numeric(7,2) not null,
+	stock integer check(stock>=0),
+	sectionID varchar(3) not null,
+	sellout_period smallint,
+	
+	primary key(itemcode),
+	foreign key(sectionID) references storage_area(sectionID) on delete restrict on update cascade
+);
+
+create type refund_policy as enum('refundable','replaceable','non-returnable non-replaceable');
+
+create table product
+(
+	productname varchar(50),
+	brandname varchar(20) not null,
+	gst numeric(5,2),
+	return_policy refund_policy,
+
+	primary key(productname)
+);
+
+create table packed_food
+(
+	productname varchar(50) references product(productname) on delete cascade on update cascade,
+	bestbefore varchar(10) not null,
+	
+	primary key(productname)
+);
+
+create table clothes
+(
+	productname varchar(50) references product(productname) on delete cascade on update cascade,
+	type varchar(20) not null,
+
+	primary key(productname)
+);
+
+create table personal_care
+(
+	productname varchar(50) references product(productname) on delete cascade on update cascade,
+	bestbefore varchar(10) not null,
+
+	primary key(productname)
+);
+
+create table packed_food_description
+(       
+	productname varchar(50) references packed_food(productname) on delete cascade on update cascade,
+	flavour varchar(20),
+	quantity  numeric(5,3),
+	units varchar(10),
+	itemcode varchar(20) not null,
+	
+	primary key(flavour,quantity,units,productname),
+	foreign key(itemcode) references items(itemcode) on delete cascade on update cascade 
+);
+
+
+create type categories as enum('infant','kids','teenager','adult');
+
+
+create table clothes_description
+(
+	productname varchar(50) references clothes(productname) on delete cascade on update cascade,
+	gender char(1),
+	colour varchar(20),
+	age_group categories,
+	size varchar(8),
+	itemcode varchar(20) not null,
+	
+	primary key(productname,size,colour,age_group,gender),
+	foreign key(itemcode) references items(itemcode) on delete cascade on update cascade 
+);
+
+create table  personal_care_description
+(       
+    productname varchar(50) references personal_care(productname) on delete cascade on update cascade,
+	fragrance  varchar(20),
+	quantity  numeric(5,3),
+	units varchar(10),
+	gender char(1),
+	itemcode varchar(20) not null,
+	
+	primary key(productname,fragrance,quantity,units,gender),
+	foreign key(itemcode) references items(itemcode) on delete cascade on update cascade 
+);
+
+
+create  table supplier
+(
+	licenseno varchar(20) primary key,
+	name varchar(50) not null,
+	address_city varchar(20) not null,
+	address_street varchar(40) not null,
+	address_pin numeric(6,0) not null,
+	contactno char(16) not null
+);
+
+
+create table supply_record
+(
+	licenseno varchar(20) references supplier(licenseno) on delete cascade on update cascade,
+	itemcode varchar(20) references items(itemcode) on delete cascade on update cascade,
+	date date,
+	qty integer check(qty>0),
+	cost_price numeric(7,2) not null,
+	primary key (licenseno,itemcode,date)
+);
+
+create table discount
+(
+	code varchar(10) primary key,
+	description text ,
+        valid_from date not null,
+	valid_till date not null,
+	constraint consistent check (valid_from<valid_till)
+);
+
+create table discount_products
+(
+	discount_code varchar(10) references discount(code) on delete cascade on update cascade,
+	itemcode varchar(20) references items(itemcode) on delete cascade on update cascade,
+	qty integer not null,
+    percentage numeric(5,2) not null,
+	primary key (itemcode,discount_code) 
+);
+
+create table shift
+(
+	shift_name  varchar(15),
+	in_time time not null,
+	out_time time not null,
+
+	primary key(shift_name)
+);
+
+
+create table members 
+(
+	id numeric(5,0),
+	name varchar(20) not null,
+	email varchar(30),
+	contactno char(16) not null,
+
+	primary key(id)
+);
+
+
+create table department
+(
+	dno smallint,
+	dname varchar(20) not null,
+	mgrssn numeric(9,0),
+	
+	primary key(dno)
+);
+
+create table employee
+(
+	ssn numeric(9,0),
+	name varchar(40) not null,
+	contactno char(16) not null,
+	address_city varchar(20),
+	address_street varchar(40),
+	address_pin numeric(6,0),
+	gender char(1) not null,
+	dob date,
+	salary integer not null,
+	dno smallint not null,
+	
+	primary key(ssn),
+	foreign key(dno) references department(dno) on delete restrict on update cascade
+);
+
+alter table department add constraint fk foreign key(mgrssn) references employee(ssn) on delete cascade on update cascade;
+
+create table shift_assigns
+(
+	ssn numeric(9,0),
+	shift_name varchar(15),
+
+	primary key(ssn,shift_name),
+	foreign key(ssn) references employee(ssn) on delete cascade on update cascade
+); 
+
+create table attendance
+(
+	ssn numeric(9,0),
+	shift_name varchar(15),
+	date date,
+	is_present bool not null,
+	
+
+	primary key(ssn,shift_name,date),
+	foreign key(ssn,shift_name) references shift_assigns(ssn,shift_name)
+);
+create table bill
+(
+	invno integer primary key,
+	bill_date date not null,
+	bill_time time not null,
+	bill_amount numeric(10,2) default 0,
+	payment_mode varchar(10) not null,
+	cashier_ssn numeric(9,0) references employee(ssn) on update cascade on delete restrict not null,
+	customer_id numeric(5,0) references members(id) on update cascade on delete restrict
+);
+
+create table bill_details
+(
+	invno integer,
+	itemcode varchar(20),
+	qty integer not null,
+	discount_applied varchar(10),
+	purchaseprice numeric(7,2) default 0.00,
+
+	primary key(invno,itemcode),
+	foreign key(invno) references bill(invno) on update cascade on delete cascade,
+	foreign key(itemcode) references items(itemcode) on update cascade on delete cascade
+);
+
+create type state as enum('resolved','in_process','executive_assigned');
+
+create table complain
+(
+	complaincode numeric(9,0) primary key,
+	complainer_name varchar(20) not null,
+	contactno char(16) not null,
+	status state default 'in_process',
+	decription text,
+	serviced_by numeric(9,0) references employee(ssn) on update cascade on delete restrict,
+	actions_taken text,
+	invno integer not null,
+	itemcode varchar(20) not null,
+	
+	foreign key (invno,itemcode) references bill_details(invno,itemcode) on update cascade on delete cascade
+);
+
+create or replace function supply_to_stock()
+returns trigger as $$
+DECLARE
+	var supply_record.qty%type;
+	s items.stock%type;
+BEGIN
+	IF(TG_OP='INSERT') THEN
+		var:=new.qty;
+		select stock into s from items where itemcode=new.itemcode; 
+		update items set stock=s+var where itemcode=new.itemcode;
+	ELSIF(TG_OP='UPDATE') THEN
+		var:=old.qty;
+		select stock into s from items where itemcode=old.itemcode;
+		update items set stock=s-var where itemcode=new.itemcode;
+		var:=new.qty;
+		select stock into s from items where itemcode=new.itemcode; 
+		update items set stock=s+var where itemcode=new.itemcode;
+	END IF;
+RETURN NULL;
+END;
+$$ LANGUAGE 'plpgsql';
+
+create trigger supply_to_stock
+after insert or update on supply_record
+for each row execute procedure supply_to_stock();
+
+create or replace function discounts()
+returns trigger as $$
+DECLARE
+	dis numeric(9,2);
+	dcode bill_details.discount_applied%type :=NULL;
+	r record;
+	pp bill_details.purchaseprice%type;
+	tem numeric(9,2);
+	d bill.bill_date%type;
+BEGIN
+			SELECT bill_date INTO d from bill where invno=new.invno;
+			dis:=0.00;
+			select mrp into tem from items where itemcode=new.itemcode;
+			for r in select * from (discount_products as dp join discount as dis on dp.discount_code=dis.code) where itemcode=new.itemcode and d<=dis.valid_till and d>=dis.valid_from and dp.qty<=new.qty
+			LOOP
+				
+				if(tem*(new.qty)-tem*(mod(new.qty,r.qty)+(new.qty/r.qty)*r.percentage*0.01)>dis) then
+					dcode=r.discount_code;
+					dis=tem*(new.qty)-tem*(mod(new.qty,r.qty)+(new.qty/r.qty)*r.percentage*0.01);
+				end if;
+			end LOOP;
+			
+			--raise notice 'Value: %', tem*new.qty-dis;
+				pp=(tem*new.qty-dis)*1.00/new.qty;
+				
+				NEW.purchaseprice = pp;
+				NEW.discount_applied = dcode;
+RETURN NEW;
+END;
+$$ LANGUAGE 'plpgsql';
+
+create trigger discounts
+before insert or update on bill_details
+for each row execute procedure discounts();
+
+create or replace function bills_update()
+returns trigger as $$
+DECLARE
+	pp bill.bill_amount%type;
+	total bill.bill_amount%type;
+	
+BEGIN	
+		 IF(TG_OP='INSERT') THEN
+			select bill_amount into total from bill where invno=new.invno;
+			pp=new.purchaseprice*new.qty;
+				if(total is null) then
+					total:=0;
+				end if;
+			total:=total+pp;
+			update bill set bill_amount=total where invno=new.invno;
+			RETURN NEW;
+		ELSIF(TG_OP='DELETE') THEN
+			select bill_amount into total from bill where invno=old.invno;
+			pp=old.purchaseprice*old.qty;
+			total:=total-pp;
+			update bill set bill_amount=total where invno=old.invno;
+			RETURN OLD;
+		ELSE
+			select bill_amount into total from bill where invno=old.invno;
+			pp=old.purchaseprice*old.qty;
+			total:=total-pp;
+			update bill set bill_amount=total where invno=old.invno;
+			select bill_amount into total from bill where invno=new.invno;
+			pp=new.purchaseprice*new.qty;
+			total:=total+pp;
+			update bill set bill_amount=total where invno=new.invno;
+			RETURN NEW;
+		END IF;
+	
+RETURN NULL;
+END;
+$$ LANGUAGE 'plpgsql';
+
+create trigger bills_update
+after insert or update or delete on bill_details
+for each row execute procedure bills_update();
+
+create or replace function stock_to_bill()
+returns trigger as $$
+DECLARE
+	var bill_details.qty%type;
+	s items.stock%type;
+BEGIN
+	IF(TG_OP='INSERT') THEN
+			var:=new.qty;
+			select stock into s from items where itemcode=new.itemcode; 
+			update items set stock=s-var where itemcode=new.itemcode;
+	ELSIF(TG_OP='UPDATE') THEN
+		var:=old.qty;
+		select stock into s from items where itemcode=old.itemcode;
+		update items set stock=s+var where itemcode=new.itemcode;
+		var:=new.qty;
+		select stock into s from items where itemcode=new.itemcode; 
+		update items set stock=s-var where itemcode=new.itemcode;
+	END IF;
+RETURN NULL;
+END;
+$$ LANGUAGE 'plpgsql';
+
+create trigger stock_to_bill
+after insert or update on bill_details
+for each row execute procedure stock_to_bill();
+
+create or replace function valid_quantity(IN ic items.itemcode%type, IN q bill_details.qty%type)
+returns bool as $$
+DECLARE
+	var items.stock%type;
+BEGIN
+	SELECT stock INTO var FROM items WHERE itemcode=ic;
+	if(var>=q) then
+		return TRUE;
+	else
+		return FALSE;
+	end if;
+END;
+$$ language 'plpgsql';
+
+alter table bill_details add constraint valid_quantity check(valid_quantity(itemcode,qty));

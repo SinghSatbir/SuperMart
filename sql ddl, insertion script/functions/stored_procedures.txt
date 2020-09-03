@@ -1,0 +1,13 @@
+create or replace function valid_quantity(IN ic items.itemcode%type, IN q bill_details.qty%type)
+returns bool as $$
+DECLARE
+	var items.stock%type;
+BEGIN
+	SELECT stock INTO var FROM items WHERE itemcode=ic;
+	if(var>=q) then
+		return TRUE;
+	else
+		return FALSE;
+	end if;
+END;
+$$ language 'plpgsql';

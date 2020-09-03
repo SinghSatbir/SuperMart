@@ -1,0 +1,7 @@
+﻿<columns units="px">
+  <column name="licenseno" type="Text" format="G" nulltext="-" alignment="Right" />
+  <column name="itemcode" type="Text" />
+  <column name="date" type="Text" />
+  <column name="qty" type="Text" />
+  <column name="cost_price" type="Text" />
+</columns>

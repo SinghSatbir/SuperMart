@@ -1,0 +1,11 @@
+complaincode,complainer_name,contactno,status,discription,serviced_by,actions_taken,invno,itemcode
+1,Debra Hansen,+91-992-901-8163,executive_assigned,quality not to satisfaction,730-44-4117,bill details corrected and money returned,2,3437092838232
+2,Lauren Bishop,+91-106-750-3845,resolved,bill details mismatched,481-55-0169,bill details corrected and money returned,5,9673455923281
+3,Marshall Richardson,+91-142-110-6253,in_process,customer charged mor than specific price due to incorrect bill,730-44-4117,'NULL',3,4198370883808
+4,Maryann Gutierrez,+91-250-846-4451,executive_assigned,discount not deducted,730-44-4117,'NULL',5,9414224955035
+5,Ira Sims,+91-520-522-0424,resolved,quality not to satisfaction,730-44-4117,product replaced,2,3692809881621
+6,Harriet Rudiger,+91-318-168-0352,executive_assigned,bill details mismatched,481-55-0169,'NULL',9,5709928372640
+7,Weylin Stonary,+91-974-323-1646,in_process,customer charged mor than specific price due to incorrect bill,481-55-0169,'NULL',10,2147024987972
+8,Boyce Mordey,+91-986-499-1957,in_process,discount not deducted,730-44-4117,'NULL',11,5692260424576
+9,Gardener Oldaker,+91-424-869-0985,executive_assigned,quality not to satisfaction,730-44-4117,'NULL',12,9673455923281
+10,Olva Sproule,+91-765-754-6911,resolved,customer charged mor than specific price due to incorrect bill,481-55-0169,wrong complain and customer is informed about it,13,1202090786034

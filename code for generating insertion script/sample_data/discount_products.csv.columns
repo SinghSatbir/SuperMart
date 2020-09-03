@@ -1,0 +1,6 @@
+﻿<columns units="px">
+  <column name="discount_code" type="Text" />
+  <column name="itemcode" type="Text" />
+  <column name="qty" type="Number" format="G" nulltext="-" alignment="Right" />
+  <column name="percentage" type="Decimal" format="G" nulltext="-" alignment="Right" />
+</columns>

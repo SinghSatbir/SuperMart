@@ -1,0 +1,9 @@
+﻿<columns units="px">
+  <column name="invno" type="Number" format="G" nulltext="-" alignment="Right" />
+  <column name="bill_date" type="Text" format="dd-MM-yyyy" nulltext="-/-/----" alignment="Right" />
+  <column name="bill_time" type="Text" format="HH:mm:ss" nulltext="-:--:-- --" alignment="Right" />
+  <column name="bill_amount" type="Decimal" format="G" nulltext="-" alignment="Right" />
+  <column name="payment_mode" type="Text" />
+  <column name="cashier_ssn" type="Text" format="G" alignment="Right" />
+  <column name="customer_id" type="Number" format="G" nulltext="-" alignment="Right" />
+</columns>

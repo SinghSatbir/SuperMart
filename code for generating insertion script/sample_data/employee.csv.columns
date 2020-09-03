@@ -1,0 +1,12 @@
+﻿<columns units="px">
+  <column name="ssn" type="Text" />
+  <column name="name" type="Text" />
+  <column name="contactno" type="Text" />
+  <column name="address_city" type="Text" />
+  <column name="address_street" type="Text" />
+  <column name="address_pin" type="Text" />
+  <column name="gender" type="Text" />
+  <column name="dob" type="Text" />
+  <column name="salary" type="Text" format="G" nulltext="-" alignment="Right" />
+  <column name="dno" type="Text" format="G" nulltext="-" alignment="Right" />
+</columns>

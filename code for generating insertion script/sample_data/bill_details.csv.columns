@@ -1,0 +1,7 @@
+﻿<columns units="px">
+  <column name="invno" type="Number" format="G" nulltext="-" alignment="Right" />
+  <column name="itemcode" type="Text" />
+  <column name="qty" type="Number" format="G" nulltext="-" alignment="Right" />
+  <column name="discount_applied" type="Text" />
+  <column name="purchaseprice" type="Decimal" format="G" nulltext="-" alignment="Right" />
+</columns>

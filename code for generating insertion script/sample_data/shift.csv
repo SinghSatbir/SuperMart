@@ -1,0 +1,5 @@
+shift_name,in_time,out_time
+Morning,09:00,10:00
+Evening,04:00,10:00
+Night,10:00,09:00
+Noon,10:00,04:00

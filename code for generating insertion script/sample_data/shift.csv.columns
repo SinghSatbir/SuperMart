@@ -1,0 +1,5 @@
+﻿<columns units="px">
+  <column name="shift_name" type="Text" />
+  <column name="in_time" type="Text" />
+  <column name="out_time" type="Text" format="h:mm:ss tt" alignment="Right" />
+</columns>

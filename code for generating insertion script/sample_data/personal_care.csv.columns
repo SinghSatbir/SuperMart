@@ -1,0 +1,4 @@
+﻿<columns units="px">
+  <column name="productname" type="Text" />
+  <column name="bestbefore" type="Text" format="G" alignment="Right" />
+</columns>

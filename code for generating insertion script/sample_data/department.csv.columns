@@ -1,0 +1,5 @@
+﻿<columns units="px">
+  <column name="dno" type="Text" format="G" nulltext="-" alignment="Right" />
+  <column name="dname" type="Text" />
+  <column name="mgrssn" type="Text" format="G" nulltext="-" alignment="Right" />
+</columns>
